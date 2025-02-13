@@ -1,80 +1,61 @@
-#imported the Tkinter library
 import tkinter as tk
-from tkinter import ttk
-import tkinter.messagebox
+from tkinter import messagebox
 from tkinter.constants import SUNKEN
 
-#Creating the GUI window for the calculator
-window = tk.Tk()
-window.title('Calculator')
+class Calculator:
+    def __init__(self, window):
+        self.window = window
+        self.window.title("Calculator")
+        self.window.geometry("300x400")
+        self.window.resizable(False, False)
 
-#This creates the backgrownd on the GUI
-frame = tk.Frame(master = window, bg = 'Green', padx = 10)
+        # Create the main frame
+        self.frame = tk.Frame(master=self.window, bg='lightgray', padx=10, pady=10)
+        self.frame.pack(fill=tk.BOTH, expand=True)
 
-#This resizes the frames to fits its contents
-frame.pack()
+        # Create the entry widget for displaying the input and results
+        self.entry = tk.Entry(master=self.frame, relief=SUNKEN, borderwidth=3, width=30, font=('Arial', 14))
+        self.entry.grid(row=0, column=0, columnspan=4, pady=10, ipady=10)
 
+        # Define buttons and their positions
+        self.buttons = [
+            ('7', 1, 0), ('8', 1, 1), ('9', 1, 2), ('/', 1, 3),
+            ('4', 2, 0), ('5', 2, 1), ('6', 2, 2), ('*', 2, 3),
+            ('1', 3, 0), ('2', 3, 1), ('3', 3, 2), ('-', 3, 3),
+            ('0', 4, 0), ('C', 4, 1), ('=', 4, 2), ('+', 4, 3)
+        ]
 
-#Modifies the buttons and the intpit 
-entry = tk.Entry(master= frame, relief = SUNKEN, borderwidth= 3, width = 30)
-entry.grid(row = 0, column = 0, columnspan=3, ipady=2,pady=2)
+        # Create and place buttons
+        for (text, row, col) in self.buttons:
+            button = tk.Button(
+                master=self.frame, text=text, padx=15, pady=10, width=5,
+                font=('Arial', 12), command=lambda t=text: self.on_button_click(t)
+            )
+            button.grid(row=row, column=col, pady=5, padx=5)
 
-#Defines the function to input 
-def myclick(number):
-    entry.insert(tk.END, number)
+    def on_button_click(self, text):
+        """Handles button clicks."""
+        if text == '=':
+            self.calculate_result()
+        elif text == 'C':
+            self.clear_entry()
+        else:
+            self.entry.insert(tk.END, text)
 
-#Defines the = sign
-def equal():
-    try: 
-        y = str(eval(entry.get()))
-        entry.delete(0,tk.END)
-        entry.insert(0,y)
+    def calculate_result(self):
+        """Evaluates the expression in the entry widget."""
+        try:
+            result = str(eval(self.entry.get()))
+            self.entry.delete(0, tk.END)
+            self.entry.insert(0, result)
+        except Exception as e:
+            messagebox.showerror("Error", "Invalid Expression")
 
-    except:
-        tkinter.messagebox.showinfo("Error","Syntax Error")
+    def clear_entry(self):
+        """Clears the entry widget."""
+        self.entry.delete(0, tk.END)
 
-#Degines the clear function 
-def clear():
-    entry.delete(0,tk.END)
-
-#Defines the button possition and the name and the function 
-button_1 = tk.Button(master = frame, text ='1', padx = 15,pady = 5, width = 3, command = lambda:  myclick(1))
-button_1.grid(row =1, column = 0, pady= 2)
-button_2 = tk.Button(master = frame, text ='2', padx = 15,pady = 5, width = 3, command = lambda:  myclick(2))
-button_2.grid(row =1, column = 1, pady= 2)
-button_3 = tk.Button(master = frame, text ='3', padx = 15,pady = 5, width = 3, command = lambda:  myclick(3))
-button_3.grid(row =1, column = 2, pady= 2)
-button_4 = tk.Button(master = frame, text ='4', padx = 15,pady = 5, width = 3, command = lambda:  myclick(4))
-button_4.grid(row =2, column = 0, pady= 2)
-button_5 = tk.Button(master = frame, text ='5', padx = 15,pady = 5, width = 3, command = lambda:  myclick(5))
-button_5.grid(row =2, column = 1, pady= 2)
-button_6 = tk.Button(master = frame, text ='6', padx = 15,pady = 5, width = 3, command = lambda:  myclick(6))
-button_6.grid(row = 2, column = 2, pady= 2)
-button_7 = tk.Button(master = frame, text ='7', padx = 15,pady = 5, width = 3, command = lambda:  myclick(7))
-button_7.grid(row =3, column = 0, pady= 2)
-button_8 = tk.Button(master = frame, text ='8', padx = 15,pady = 5, width = 3, command = lambda:  myclick(8))
-button_8.grid(row =3, column = 1, pady= 2)
-button_9 = tk.Button(master = frame, text ='9', padx = 15,pady = 5, width = 3, command = lambda:  myclick(9))
-button_9.grid(row =3, column = 2, pady= 2)
-button_0 = tk.Button(master = frame, text ='0', padx = 15,pady = 5, width = 3, command = lambda:  myclick(0))
-button_0.grid(row =4, column = 1, pady= 2)
-
-#Define the Mathes operation + - * /
-button_add = tk.Button(master = frame, text ='+', padx = 15,pady = 5, width = 3, command = lambda:  myclick('+'))
-button_add.grid(row =5, column = 0, pady= 2)
-button_subtract = tk.Button(master = frame, text ='-', padx = 15,pady = 5, width = 3, command = lambda:  myclick('-'))
-button_subtract.grid(row =5, column = 1, pady= 2)
-button_multiply = tk.Button(master = frame, text ='*', padx = 15,pady = 5, width = 3, command = lambda:  myclick('*'))
-button_multiply.grid(row =5, column = 2, pady= 2)
-button_div = tk.Button(master = frame, text ='/', padx = 15,pady = 5, width = 3, command = lambda:  myclick('/'))
-button_div.grid(row =6, column = 0, pady= 2)
-
-#Defines the Equals and clear functions
-button_clear = tk.Button(master = frame, text ='clear', padx = 15,pady = 5, width = 12, command = clear)
-button_clear.grid(row =6, column = 1, columnspan=2, pady= 2)
-button_equal = tk.Button(master= frame, text='=', padx = 15, pady = 5, width = 9, command= equal)
-button_equal.grid(row = 7, column = 0, columnspan= 3, pady = 2)
-
-
-#This loops the window GUI and awaits for an event to occur
-window.mainloop()
+if __name__ == "__main__":
+    window = tk.Tk()
+    calculator = Calculator(window)
+    window.mainloop()
